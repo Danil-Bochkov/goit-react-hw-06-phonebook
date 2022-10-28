@@ -1,48 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getContacts, getFilterContact } from 'redux/selectors';
+import { updateFilter } from 'redux/filterSlice';
+
 import Section from './Section';
 import ContactForm from './ContactForm';
 import ContactList from './ContactList';
 import Filter from './Filter';
 
 import './PhoneBook.scss';
-import { nanoid } from 'nanoid';
-
-const useLocalStorage = (key, defaultValue) => {
-  const [state, setState] = useState(() => {
-    return JSON.parse(window.localStorage.getItem(key)) ?? defaultValue;
-  });
-
-  useEffect(() => {
-    window.localStorage.setItem(key, JSON.stringify(state));
-  }, [key, state]);
-  return [state, setState];
-};
 
 export default function PhoneBook() {
-  const [contacts, setContacts] = useLocalStorage('contacts', []);
-  const [filter, setFilter] = useLocalStorage('filter', '');
-
-  const formSubmitHandler = (name, number) => {
-    if (contacts.some(contact => contact.name === name)) {
-      alert(`${name} is already in contacts.`);
-      return;
-    }
-
-    setContacts(state => {
-      return [
-        ...state,
-        {
-          id: nanoid(),
-          name,
-          number,
-        },
-      ];
-    });
-  };
-
-  const handleChange = evt => {
-    setFilter(evt.currentTarget.value);
-  };
+  const dispatch = useDispatch();
+  const filter = useSelector(getFilterContact);
+  const contacts = useSelector(getContacts);
 
   const filterContacts = contacts => {
     return contacts?.filter(contact =>
@@ -50,23 +20,18 @@ export default function PhoneBook() {
     );
   };
 
-  const handleDeleteContact = idContact => {
-    setContacts(state => {
-      return state?.filter(state => state.id !== idContact);
-    });
+  const handleChange = evt => {
+    dispatch(updateFilter(evt.currentTarget.value));
   };
 
   return (
     <div className="PhoneBook">
       <Section title="Phonebook">
-        <ContactForm onSubmit={formSubmitHandler} />
+        <ContactForm />
       </Section>
       <Section title="Contacts">
         <Filter handleChange={handleChange} filter={filter} />
-        <ContactList
-          contacts={filterContacts(contacts)}
-          onDeleteContact={handleDeleteContact}
-        />
+        <ContactList contacts={filterContacts(contacts)} />
       </Section>
     </div>
   );

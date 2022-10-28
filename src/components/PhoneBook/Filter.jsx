@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Filter = ({ filter, handleChange }) => {
+const Filter = ({ handleChange, filter }) => {
   return (
     <form className="filterField">
       <label className="filterField__label">
