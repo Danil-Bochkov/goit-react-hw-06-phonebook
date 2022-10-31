@@ -20,7 +20,7 @@ const ContactList = ({ contacts }) => {
               </span>
               <button
                 className="contactsList__btn"
-                onClick={() => dispatch(deleteContact())}
+                onClick={() => dispatch(deleteContact(id))}
               >
                 Delete
               </button>
